@@ -111,7 +111,14 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun writeFile(){
-//        check(outputStream is File)
+        val outputStream: FileOutputStream = File(filesDir, FILE_NAME).outputStream()
+        val writer = BufferedWriter(OutputStreamWriter(outputStream))
+
+        locations.forEach { location ->
+            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
+            writer.newLine()
+        }
+
         nameCustomEditText = findViewById(R.id.customName)
         latitudeCustomEditText = findViewById(R.id.customLatitude)
         longitudeCustomEditText = findViewById(R.id.customLongitude)
@@ -124,14 +131,6 @@ class MainActivity : AppCompatActivity(){
         val timeZone = TimeZone.getTimeZone(timezone)
 
         val addlocation = GeoLocation(name, latitude, longtitude, timeZone)
-
-        val outputStream: FileOutputStream = File(filesDir, FILE_NAME).outputStream()
-        val writer = BufferedWriter(OutputStreamWriter(outputStream))
-
-        locations.forEach { location ->
-            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
-            writer.newLine()
-        }
 
         val newLocation = "${addlocation.locationName},${addlocation.latitude},${addlocation.longitude},${addlocation.timeZone.id}"
         writer.append(newLocation)
