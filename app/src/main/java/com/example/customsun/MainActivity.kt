@@ -1,6 +1,7 @@
 package com.example.customsun
 
 import android.annotation.TargetApi
+import android.content.SharedPreferences
 import android.media.ImageReader
 import android.os.Build
 import android.os.Bundle
@@ -44,8 +45,15 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         readFile()
         initialiseUi()
+
+        addButton.setOnClickListener {
+            writeFile()
+            initialiseUi()
+            return@setOnClickListener
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -53,6 +61,7 @@ class MainActivity : AppCompatActivity(){
         spinner = findViewById(R.id.locationSpinner)
         sunsetTextView = findViewById(R.id.sunsetTimeTV)
         sunriseTextView = findViewById(R.id.sunriseTimeTV)
+
         adapter = GeolocationsAdapter(this, android.R.layout.simple_dropdown_item_1line, locations)
         spinner?.adapter = adapter
         spinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
@@ -74,10 +83,6 @@ class MainActivity : AppCompatActivity(){
 //            return@setOnLongClickListener true
 //        }
 
-        addButton.setOnClickListener {
-            writeFile()
-            return@setOnClickListener
-        }
 
     }
 
@@ -114,18 +119,29 @@ class MainActivity : AppCompatActivity(){
         val outputStream: FileOutputStream = File(filesDir, FILE_NAME).outputStream()
         val writer = BufferedWriter(OutputStreamWriter(outputStream))
 
-        val name: String = nameCustomEditText.toString()
-        val latitude: Double = latitudeCustomEditText.toString().toDouble()
-        val longtitude: Double = longitudeCustomEditText.toString().toDouble()
-        val timezone = timeZoneCustomEditText.toString()
+        nameCustomEditText = findViewById(R.id.customName)
+        latitudeCustomEditText = findViewById(R.id.customLatitude)
+        longitudeCustomEditText = findViewById(R.id.customLongitude)
+        timeZoneCustomEditText = findViewById(R.id.customTimezone)
+
+        val name: String = nameCustomEditText?.text.toString()
+        val latitude: Double = latitudeCustomEditText?.text.toString().toDoubleOrNull()?:0.0
+        val longtitude: Double = longitudeCustomEditText?.text.toString().toDoubleOrNull()?:0.0
+        val timezone = timeZoneCustomEditText?.text.toString()
         val timeZone = TimeZone.getTimeZone(timezone)
 
         val location = GeoLocation(name, latitude, longtitude, timeZone)
 
-        locations.forEach {
-            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
-            writer.newLine()
-        }
+//        locations.forEach {
+//            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
+//            writer.newLine()
+//        }
+
+        val newLocation = "${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}"
+        writer.write(newLocation)
+        writer.newLine()
+        locations.add(location)
+
         writer.close()
         outputStream.close()
     }
