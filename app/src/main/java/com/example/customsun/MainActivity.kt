@@ -78,12 +78,6 @@ class MainActivity : AppCompatActivity(){
             update(geolocation)
         }
 
-//        sunsetTextView?.setOnLongClickListener {
-//            writeFile()
-//            return@setOnLongClickListener true
-//        }
-
-
     }
 
     fun update(geoLocation: GeoLocation){
@@ -97,7 +91,8 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun readFile() {
-        val inputStream: InputStream = resources.openRawResource(R.raw.au_locations)
+//        val inputStream: InputStream = resources.openRawResource(R.raw.au_locations)
+        val inputStream: InputStream = File(filesDir, FILE_NAME).inputStream()
         val reader = BufferedReader(InputStreamReader(inputStream))
         var line: String?
         line = reader.readLine()
@@ -116,9 +111,7 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun writeFile(){
-        val outputStream: FileOutputStream = File(filesDir, FILE_NAME).outputStream()
-        val writer = BufferedWriter(OutputStreamWriter(outputStream))
-
+//        check(outputStream is File)
         nameCustomEditText = findViewById(R.id.customName)
         latitudeCustomEditText = findViewById(R.id.customLatitude)
         longitudeCustomEditText = findViewById(R.id.customLongitude)
@@ -130,17 +123,21 @@ class MainActivity : AppCompatActivity(){
         val timezone = timeZoneCustomEditText?.text.toString()
         val timeZone = TimeZone.getTimeZone(timezone)
 
-        val location = GeoLocation(name, latitude, longtitude, timeZone)
+        val addlocation = GeoLocation(name, latitude, longtitude, timeZone)
 
-//        locations.forEach {
-//            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
-//            writer.newLine()
-//        }
+        val outputStream: FileOutputStream = File(filesDir, FILE_NAME).outputStream()
+        val writer = BufferedWriter(OutputStreamWriter(outputStream))
 
-        val newLocation = "${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}"
-        writer.write(newLocation)
+        locations.forEach { location ->
+            writer.write("${location.locationName},${location.latitude},${location.longitude},${location.timeZone.id}")
+            writer.newLine()
+        }
+
+        val newLocation = "${addlocation.locationName},${addlocation.latitude},${addlocation.longitude},${addlocation.timeZone.id}"
+        writer.append(newLocation)
         writer.newLine()
-        locations.add(location)
+
+        locations.add(addlocation)
 
         writer.close()
         outputStream.close()
