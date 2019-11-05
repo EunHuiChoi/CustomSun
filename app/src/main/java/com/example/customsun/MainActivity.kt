@@ -1,17 +1,13 @@
 package com.example.customsun
 
 import android.annotation.TargetApi
-import android.content.SharedPreferences
-import android.media.ImageReader
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customsun.calc.AstronomicalCalendar
 import com.example.customsun.calc.GeoLocation
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
